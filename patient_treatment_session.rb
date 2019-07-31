@@ -20,6 +20,8 @@ class PatientTreatmentSession
 		patient
 	end
 
+	private
+
 	def applicable_treatment_effects(treatment_effects)
 		treatment_effects.select do |effect| 
 			effect.affects.include?(patient.diagnosis)

@@ -1,3 +1,6 @@
+require_relative 'patient'
+require_relative 'medication_incompatibility_detector'
+
 class TreatmentEffectDetector
 
 	class Effect
@@ -11,15 +14,6 @@ class TreatmentEffectDetector
 		end
 	end
 
-	MEDICATION_INCOMPATIBILITIES = {
-		As: {
-			with: :P, affects: ::Patient::KNOWN_DIAGNOSIS, leads_to: :X
-		},
-		I: {
-			with: :An, affects: [:H], leads_to: :F
-		}, 
-	}.freeze
-
 	THERAPEUTIC_EFFECTS = {
 		As: { affects: [:F], leads_to: :H },
 		An: { affects: [:T], leads_to: :H },
@@ -31,7 +25,6 @@ class TreatmentEffectDetector
 		I: { affects: [:D], leads_to: :X }
 	}
 
-	private_constant :MEDICATION_INCOMPATIBILITIES
 	private_constant :THERAPEUTIC_EFFECTS
 	private_constant :MISSING_VITAL_MEDICATION
 
@@ -46,30 +39,29 @@ class TreatmentEffectDetector
 	end
 
 	def run
-		therapeutic_effects.merge(missing_medication).
-			merge(incompatibilities).map do |formula, effect| 
-				Effect.new(formula => effect) 
-			end
+		therapeutic_effects + missing_medication + incompatibilities 
 	end
 
 	private
 
 	def missing_medication
 		@_missing_medication ||= 
-			MISSING_VITAL_MEDICATION.select do |k, _v| 
+			to_effect(MISSING_VITAL_MEDICATION.select do |k, _v| 
 				!formulae.include?(k)
-			end
+			end)
 	end
 
 	def incompatibilities
-		@_incompatibilities ||= 
-			MEDICATION_INCOMPATIBILITIES.slice(*formulae).
-				select do |_, inc|
-					next unless formulae.include?(inc[:with])
-				end
+		@_incompatibilities ||= to_effect(MedicationIncompatibilityDetector.run(formulae))
 	end
 
 	def therapeutic_effects
-		@_therapeutic_effects ||= THERAPEUTIC_EFFECTS.slice(*formulae)
+		@_therapeutic_effects ||= to_effect(THERAPEUTIC_EFFECTS.slice(*formulae))
+	end
+
+	def to_effect(collection)
+		collection.map do |formula, effect| 
+			Effect.new(formula => effect) 
+		end
 	end
 end

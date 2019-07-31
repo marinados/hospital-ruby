@@ -21,12 +21,17 @@ Once this is done, the `OutputFormatter` displays the stats we're interested in.
 cd hospital-ruby && ruby main.rb "<first argument list for patients>" "<second argument list for medicine administered>"
 ```
 
+## How to run the tests
+```shell
+bin/test
+```
+
 ## "Product" questions that need to be clarified
 - What is the order of priority for potential therapeutic and side effects? Do the side effects always have a priority? (That's what has been implemented currently)
 - Does the flying spaghetti monster aka resurrection randomizer apply to the whole lot of patients (current implementation) or is it a matter of individual luck?
 
 ## Potential code improvements
-- add test coverage for all the business logic
+- ~~add test coverage for all the business logic~~
 - extract the "therapeutic" logic into a dedicated lib (probably YML file) to not have it hard embedded in the code
 - make the error messages more explicit
 - introducing a modular structure into the code architecture (e.g. `Treatment` module for all of the potential therapeutic and side effect management and a `Utility` module for the parser and formatter)

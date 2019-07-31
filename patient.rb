@@ -18,6 +18,8 @@ class Patient
 		end.count
 	end
 
+	private_class_method :count_patients_with_diagnosis
+
 	def initialize(diagnosis:)
 		diagnosis = diagnosis.to_sym
 		raise UnknownDiagnosis unless KNOWN_DIAGNOSIS.include?(diagnosis)

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+TESTS=$(ls | grep "_spec")
+
+for file in $TESTS; do
+	echo "$file"
+	rspec "$file"
+done
